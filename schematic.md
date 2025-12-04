@@ -23,7 +23,7 @@ register_post_type('popm_popover', [
     'show_in_menu' => true,
     'capability_type' => 'post',
     'map_meta_cap' => true,
-    'supports' => ['title', 'editor', 'thumbnail'],
+    'supports' => ['title', 'thumbnail'],
     'menu_icon' => 'dashicons-feedback',
     'rewrite' => false,
 ]);

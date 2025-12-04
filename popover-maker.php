@@ -34,12 +34,12 @@ define('POPM_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('POPM_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 /**
- * The code that runs during plugin activation.
- * This action is documented in includes/popm-functions.php
+ * Include required files.
  */
 require_once POPM_PLUGIN_PATH . 'includes/popm-functions.php';
+require_once POPM_PLUGIN_PATH . 'includes/post-type.php';
 
 /**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
+ * Register hooks.
  */
+add_action('init', 'popm_register_post_type');
