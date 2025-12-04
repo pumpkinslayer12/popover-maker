@@ -38,6 +38,7 @@ define('POPM_PLUGIN_URL', plugin_dir_url(__FILE__));
  */
 require_once POPM_PLUGIN_PATH . 'includes/popm-functions.php';
 require_once POPM_PLUGIN_PATH . 'includes/post-type.php';
+require_once POPM_PLUGIN_PATH . 'includes/meta-boxes.php';
 
 /**
  * Register hooks.
@@ -45,3 +46,5 @@ require_once POPM_PLUGIN_PATH . 'includes/post-type.php';
 add_action('init', 'popm_register_post_type');
 add_filter('manage_popm_popover_posts_columns', 'popm_add_admin_columns');
 add_action('manage_popm_popover_posts_custom_column', 'popm_render_admin_columns', 10, 2);
+add_action('add_meta_boxes', 'popm_register_meta_boxes');
+add_action('save_post_popm_popover', 'popm_save_meta');
