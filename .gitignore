@@ -35,3 +35,5 @@ creds.js
 # Application Custom Files
 CLAUDE.md
 .claude/
+local_reference/
+screenshots/
