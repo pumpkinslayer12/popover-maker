@@ -43,3 +43,5 @@ require_once POPM_PLUGIN_PATH . 'includes/post-type.php';
  * Register hooks.
  */
 add_action('init', 'popm_register_post_type');
+add_filter('manage_popm_popover_posts_columns', 'popm_add_admin_columns');
+add_action('manage_popm_popover_posts_custom_column', 'popm_render_admin_columns', 10, 2);
