@@ -41,9 +41,6 @@ register_post_type('popm_popover', [
 | `_popm_end_date`         | string | `''`             | MySQL datetime (`Y-m-d H:i:s`) or empty           |
 | `_popm_width`            | string | `'900px'`        | CSS value (px, %, vw)                             |
 | `_popm_max_height`       | string | `'600px'`        | CSS value (px, %, vh)                             |
-| `_popm_trigger_type`     | string | `'auto'`         | `'auto'` \| `'button'` \| `'both'`                |
-| `_popm_button_text`      | string | `'Open Form'`    | Max 50 chars                                      |
-| `_popm_auto_delay`       | int    | `2`              | Seconds before auto-open (0-60)                   |
 | `_popm_cookie_days`      | int    | `7`              | Days to remember dismissal (0 = always show)      |
 | `_popm_views`            | int    | `0`              | Read-only. View count                             |
 | `_popm_dismissals`       | int    | `0`              | Read-only. Dismissal count                        |
@@ -134,8 +131,6 @@ popmData = {
     ajaxUrl: admin_url('admin-ajax.php'),
     nonce: wp_create_nonce('popm_tracking_{id}'),
     popoverId: {id},
-    autoDelay: {seconds},
-    triggerType: '{type}',
     cookieDays: {days}
 }
 ```
@@ -169,16 +164,14 @@ Below 768px:
 - **Verify:** "Popovers" menu appears, editors can access
 
 ### Phase 2: Admin Meta Boxes
-- Create `meta-boxes.php` with 7 meta boxes:
+- Create `meta-boxes.php` with 6 meta boxes:
   1. Form Settings (provider + URL)
   2. Display Rules (location + priority)
   3. Scheduling (start/end datetime-local inputs)
   4. Layout (width + max-height)
-  5. Trigger Settings (type + delay + button text)
-  6. Dismissal Settings (cookie days)
-  7. Analytics (read-only: views, dismissals, rate)
+  5. Dismissal Settings (cookie days)
+  6. Analytics (read-only: views, dismissals, rate)
 - Create `popm_save_meta()` with nonce check, capability check, sanitization
-- Create `admin.css` and `admin.js` for conditional field visibility
 - **Verify:** Settings save and persist on reload
 
 ### Phase 3: Frontend Display
@@ -192,15 +185,14 @@ Below 768px:
   - Left: featured image (if set)
   - Right: iframe (if form URL) or post_content (fallback)
   - Close button (×)
-  - Trigger button (if trigger type includes button)
 - Create `popover.css`:
   - Full viewport overlay with backdrop
   - Centered modal, responsive (stack on mobile)
   - `.active` class toggles visibility
 - Create `popover.js`:
   - `openPopover()` / `closePopover()` functions
-  - Auto-open with configurable delay
-  - Close on: button click, overlay click, ESC key
+  - Auto-open on page load
+  - Close on: close button click, overlay click, ESC key
   - Cookie set/check functions
 - **Verify:** Popover displays based on location, dates, cookie
 
@@ -260,8 +252,7 @@ Below 768px:
 - [ ] Priority system works (highest wins, newest tiebreaker)
 - [ ] Cookie dismissal works (respects cookie_days, 0 = always show)
 - [ ] Google Forms iframe embeds correctly
-- [ ] Auto-open trigger respects delay setting
-- [ ] Button trigger displays and opens popover
+- [ ] Popover auto-opens on page load
 - [ ] Close button, overlay click, ESC key all close popover
 - [ ] Analytics increment correctly, display in admin
 
@@ -303,7 +294,30 @@ Below 768px:
 .popm-image            — Featured image section
 .popm-content          — Content/iframe section
 .popm-iframe           — Form iframe
-.popm-trigger-button   — Trigger button (when trigger_type includes button)
 .active                — Visibility toggle
 .popm-active           — Body class when popover open
 ```
+
+
+## 10. Future Possible Features
+
+### Trigger Settings
+Alternative ways to open the popover beyond immediate auto-open on page load.
+
+**Potential meta fields:**
+| Meta Key | Type | Default | Description |
+|----------|------|---------|-------------|
+| `_popm_trigger_type` | string | `'auto'` | `'auto'` \| `'button'` \| `'both'` |
+| `_popm_button_text` | string | `'Open Form'` | Button label (max 50 chars) |
+| `_popm_auto_delay` | int | `2` | Seconds before auto-open (0-60) |
+
+**Trigger types:**
+- **Auto**: Popover opens automatically after configurable delay
+- **Button**: A trigger button appears on page; popover opens on click
+- **Both**: Auto-open with delay AND persistent button for re-opening
+
+**Implementation notes:**
+- Requires new meta box: "Trigger Settings"
+- Requires `admin.js` for conditional field visibility (hide button text when type is 'auto', hide delay when type is 'button')
+- Requires `.popm-trigger-button` CSS class
+- `popmData` JS object would need `autoDelay` and `triggerType` properties

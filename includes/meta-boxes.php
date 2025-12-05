@@ -42,6 +42,15 @@ function popm_register_meta_boxes() {
         'normal',
         'high'
     );
+
+    add_meta_box(
+        'popm_layout',
+        __('Layout', 'popover-maker'),
+        'popm_render_layout_meta_box',
+        'popm_popover',
+        'normal',
+        'high'
+    );
 }
 
 /**
@@ -190,6 +199,48 @@ function popm_render_scheduling_meta_box($post) {
 }
 
 /**
+ * Render the Layout meta box.
+ *
+ * @param WP_Post $post Current post object.
+ * @return void
+ */
+function popm_render_layout_meta_box($post) {
+    // Get current values.
+    $width      = get_post_meta($post->ID, '_popm_width', true);
+    $max_height = get_post_meta($post->ID, '_popm_max_height', true);
+
+    // Set defaults if empty.
+    if ($width === '') {
+        $width = '900px';
+    }
+    if ($max_height === '') {
+        $max_height = '600px';
+    }
+    ?>
+    <table class="form-table">
+        <tr>
+            <th scope="row">
+                <label for="popm_width"><?php esc_html_e('Width', 'popover-maker'); ?></label>
+            </th>
+            <td>
+                <input type="text" id="popm_width" name="popm_width" value="<?php echo esc_attr($width); ?>" class="regular-text">
+                <p class="description"><?php esc_html_e('CSS value (e.g., 900px, 80%, 90vw)', 'popover-maker'); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label for="popm_max_height"><?php esc_html_e('Max Height', 'popover-maker'); ?></label>
+            </th>
+            <td>
+                <input type="text" id="popm_max_height" name="popm_max_height" value="<?php echo esc_attr($max_height); ?>" class="regular-text">
+                <p class="description"><?php esc_html_e('CSS value (e.g., 600px, 80%, 90vh)', 'popover-maker'); ?></p>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+
+/**
  * Save meta box data.
  *
  * @param int $post_id Post ID.
@@ -262,6 +313,18 @@ function popm_save_meta($post_id) {
             $end_date = date('Y-m-d H:i:s', strtotime($end_date));
         }
         update_post_meta($post_id, '_popm_end_date', $end_date);
+    }
+
+    // Save Width.
+    if (isset($_POST['popm_width'])) {
+        $width = sanitize_text_field($_POST['popm_width']);
+        update_post_meta($post_id, '_popm_width', $width);
+    }
+
+    // Save Max Height.
+    if (isset($_POST['popm_max_height'])) {
+        $max_height = sanitize_text_field($_POST['popm_max_height']);
+        update_post_meta($post_id, '_popm_max_height', $max_height);
     }
 }
 
