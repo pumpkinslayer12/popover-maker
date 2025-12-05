@@ -24,6 +24,15 @@ function popm_register_meta_boxes() {
         'normal',
         'high'
     );
+
+    add_meta_box(
+        'popm_display_rules',
+        __('Display Rules', 'popover-maker'),
+        'popm_render_display_rules_meta_box',
+        'popm_popover',
+        'normal',
+        'high'
+    );
 }
 
 /**
@@ -73,6 +82,61 @@ function popm_render_form_settings_meta_box($post) {
 }
 
 /**
+ * Render the Display Rules meta box.
+ *
+ * @param WP_Post $post Current post object.
+ * @return void
+ */
+function popm_render_display_rules_meta_box($post) {
+    // Get current values.
+    $display_location = get_post_meta($post->ID, '_popm_display_location', true);
+    $priority         = get_post_meta($post->ID, '_popm_priority', true);
+
+    // Set defaults if empty.
+    if ($display_location === '') {
+        $display_location = 'all';
+    }
+    if ($priority === '') {
+        $priority = 10;
+    }
+    ?>
+    <table class="form-table">
+        <tr>
+            <th scope="row">
+                <label for="popm_display_location"><?php esc_html_e('Display Location', 'popover-maker'); ?></label>
+            </th>
+            <td>
+                <select id="popm_display_location" name="popm_display_location">
+                    <option value="all" <?php selected($display_location, 'all'); ?>>
+                        <?php esc_html_e('All Pages', 'popover-maker'); ?>
+                    </option>
+                    <option value="homepage" <?php selected($display_location, 'homepage'); ?>>
+                        <?php esc_html_e('Homepage Only', 'popover-maker'); ?>
+                    </option>
+                    <option value="pages" <?php selected($display_location, 'pages'); ?>>
+                        <?php esc_html_e('Pages Only', 'popover-maker'); ?>
+                    </option>
+                    <option value="posts" <?php selected($display_location, 'posts'); ?>>
+                        <?php esc_html_e('Posts Only', 'popover-maker'); ?>
+                    </option>
+                </select>
+                <p class="description"><?php esc_html_e('Where should this popover be displayed?', 'popover-maker'); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label for="popm_priority"><?php esc_html_e('Priority', 'popover-maker'); ?></label>
+            </th>
+            <td>
+                <input type="number" id="popm_priority" name="popm_priority" value="<?php echo esc_attr($priority); ?>" min="0" max="999" step="1" class="small-text">
+                <p class="description"><?php esc_html_e('Higher priority popovers display first (0-999).', 'popover-maker'); ?></p>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+
+/**
  * Save meta box data.
  *
  * @param int $post_id Post ID.
@@ -108,5 +172,22 @@ function popm_save_meta($post_id) {
     if (isset($_POST['popm_form_url'])) {
         $form_url = esc_url_raw($_POST['popm_form_url']);
         update_post_meta($post_id, '_popm_form_url', $form_url);
+    }
+
+    // Save Display Location.
+    if (isset($_POST['popm_display_location'])) {
+        $allowed_locations = array('all', 'homepage', 'pages', 'posts');
+        $display_location = sanitize_text_field($_POST['popm_display_location']);
+        if (!in_array($display_location, $allowed_locations, true)) {
+            $display_location = 'all';
+        }
+        update_post_meta($post_id, '_popm_display_location', $display_location);
+    }
+
+    // Save Priority.
+    if (isset($_POST['popm_priority'])) {
+        $priority = intval($_POST['popm_priority']);
+        $priority = max(0, min(999, $priority)); // Clamp to 0-999.
+        update_post_meta($post_id, '_popm_priority', $priority);
     }
 }
