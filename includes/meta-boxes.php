@@ -33,6 +33,15 @@ function popm_register_meta_boxes() {
         'normal',
         'high'
     );
+
+    add_meta_box(
+        'popm_scheduling',
+        __('Scheduling', 'popover-maker'),
+        'popm_render_scheduling_meta_box',
+        'popm_popover',
+        'normal',
+        'high'
+    );
 }
 
 /**
@@ -137,6 +146,50 @@ function popm_render_display_rules_meta_box($post) {
 }
 
 /**
+ * Render the Scheduling meta box.
+ *
+ * @param WP_Post $post Current post object.
+ * @return void
+ */
+function popm_render_scheduling_meta_box($post) {
+    // Get current values.
+    $start_date = get_post_meta($post->ID, '_popm_start_date', true);
+    $end_date   = get_post_meta($post->ID, '_popm_end_date', true);
+
+    // Convert MySQL format to HTML5 datetime-local format for display.
+    $start_value = '';
+    $end_value   = '';
+    if ($start_date) {
+        $start_value = date('Y-m-d\TH:i', strtotime($start_date));
+    }
+    if ($end_date) {
+        $end_value = date('Y-m-d\TH:i', strtotime($end_date));
+    }
+    ?>
+    <table class="form-table">
+        <tr>
+            <th scope="row">
+                <label for="popm_start_date"><?php esc_html_e('Start Date', 'popover-maker'); ?></label>
+            </th>
+            <td>
+                <input type="datetime-local" id="popm_start_date" name="popm_start_date" value="<?php echo esc_attr($start_value); ?>">
+                <p class="description"><?php esc_html_e('Leave empty to start immediately.', 'popover-maker'); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label for="popm_end_date"><?php esc_html_e('End Date', 'popover-maker'); ?></label>
+            </th>
+            <td>
+                <input type="datetime-local" id="popm_end_date" name="popm_end_date" value="<?php echo esc_attr($end_value); ?>">
+                <p class="description"><?php esc_html_e('Leave empty for no end date.', 'popover-maker'); ?></p>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+
+/**
  * Save meta box data.
  *
  * @param int $post_id Post ID.
@@ -189,5 +242,68 @@ function popm_save_meta($post_id) {
         $priority = intval($_POST['popm_priority']);
         $priority = max(0, min(999, $priority)); // Clamp to 0-999.
         update_post_meta($post_id, '_popm_priority', $priority);
+    }
+
+    // Save Start Date.
+    if (isset($_POST['popm_start_date'])) {
+        $start_date = sanitize_text_field($_POST['popm_start_date']);
+        if ($start_date) {
+            // Convert HTML5 datetime-local to MySQL format.
+            $start_date = date('Y-m-d H:i:s', strtotime($start_date));
+        }
+        update_post_meta($post_id, '_popm_start_date', $start_date);
+    }
+
+    // Save End Date.
+    if (isset($_POST['popm_end_date'])) {
+        $end_date = sanitize_text_field($_POST['popm_end_date']);
+        if ($end_date) {
+            // Convert HTML5 datetime-local to MySQL format.
+            $end_date = date('Y-m-d H:i:s', strtotime($end_date));
+        }
+        update_post_meta($post_id, '_popm_end_date', $end_date);
+    }
+}
+
+/**
+ * Add URL parameter for invalid date warning.
+ *
+ * @param string $location Redirect URL.
+ * @param int    $post_id  Post ID.
+ * @return string Modified redirect URL.
+ */
+function popm_redirect_post_location($location, $post_id) {
+    // Only check for our post type.
+    if (get_post_type($post_id) !== 'popm_popover') {
+        return $location;
+    }
+
+    $start_date = get_post_meta($post_id, '_popm_start_date', true);
+    $end_date   = get_post_meta($post_id, '_popm_end_date', true);
+
+    // Check if both dates exist and end is before start.
+    if ($start_date && $end_date && strtotime($end_date) < strtotime($start_date)) {
+        $location = add_query_arg('popm_notice', 'invalid_dates', $location);
+    }
+
+    return $location;
+}
+
+/**
+ * Display admin notices for popover validation.
+ *
+ * @return void
+ */
+function popm_admin_notices() {
+    if (!isset($_GET['popm_notice'])) {
+        return;
+    }
+
+    if ($_GET['popm_notice'] === 'invalid_dates') {
+        ?>
+        <div class="notice notice-warning is-dismissible">
+            <p><?php esc_html_e('Warning: End date is before start date. This popover will not display until the dates are corrected.', 'popover-maker'); ?></p>
+        </div>
+        <?php
     }
 }

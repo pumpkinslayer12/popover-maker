@@ -48,3 +48,5 @@ add_filter('manage_popm_popover_posts_columns', 'popm_add_admin_columns');
 add_action('manage_popm_popover_posts_custom_column', 'popm_render_admin_columns', 10, 2);
 add_action('add_meta_boxes', 'popm_register_meta_boxes');
 add_action('save_post_popm_popover', 'popm_save_meta');
+add_filter('redirect_post_location', 'popm_redirect_post_location', 10, 2);
+add_action('admin_notices', 'popm_admin_notices');

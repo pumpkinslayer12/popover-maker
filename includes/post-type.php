@@ -110,7 +110,10 @@ function popm_render_admin_columns($column, $post_id) {
 
             $status = __('Active', 'popover-maker');
 
-            if ($start_date && strtotime($start_date) > $now) {
+            // Check for invalid date range first.
+            if ($start_date && $end_date && strtotime($end_date) < strtotime($start_date)) {
+                $status = __('Invalid', 'popover-maker');
+            } elseif ($start_date && strtotime($start_date) > $now) {
                 $status = __('Scheduled', 'popover-maker');
             } elseif ($end_date && strtotime($end_date) < $now) {
                 $status = __('Expired', 'popover-maker');
