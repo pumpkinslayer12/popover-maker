@@ -1,0 +1,198 @@
+/**
+ * Popover Maker - Frontend Styles
+ *
+ * @package Popover_Maker
+ */
+
+/* ==========================================================================
+   1. Overlay - Full viewport dark backdrop
+   ========================================================================== */
+
+.popm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   2. Modal container - Centered box
+   ========================================================================== */
+
+.popm-popup {
+    position: relative;
+    background: #fff;
+    display: flex;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 100%;
+}
+
+/* ==========================================================================
+   3. Close button - Top-right corner
+   ========================================================================== */
+
+.popm-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.popm-close:hover,
+.popm-close:focus {
+    background: rgba(0, 0, 0, 0.8);
+    outline: none;
+}
+
+.popm-close:focus-visible {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   4. Image section - Left side
+   ========================================================================== */
+
+.popm-image {
+    flex: 0 0 50%;
+    min-height: 400px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+}
+
+.popm-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ==========================================================================
+   5. Content section - Right side
+   ========================================================================== */
+
+.popm-content {
+    flex: 1;
+    display: flex;
+    min-height: 400px;
+}
+
+/* ==========================================================================
+   6. Iframe - Fill content area
+   ========================================================================== */
+
+.popm-iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    border: none;
+}
+
+/* ==========================================================================
+   7. Layout variants
+   ========================================================================== */
+
+/* Form only - no image, form takes full width */
+.popm-layout-form-only .popm-content {
+    flex: 1;
+}
+
+/* Image only - image takes full width */
+.popm-layout-image-only .popm-image {
+    flex: 1;
+}
+
+.popm-layout-image-only .popm-content {
+    display: none;
+}
+
+/* Empty - just show the container */
+.popm-layout-empty .popm-content {
+    flex: 1;
+    min-height: 200px;
+}
+
+/* ==========================================================================
+   8. Body scroll lock
+   ========================================================================== */
+
+body.popm-active {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   9. Screen reader text
+   ========================================================================== */
+
+.screen-reader-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ==========================================================================
+   10. Responsive - 768px breakpoint
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .popm-overlay {
+        padding: 10px;
+    }
+
+    .popm-popup {
+        flex-direction: column;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .popm-image {
+        flex: 0 0 auto;
+        min-height: 200px;
+        max-height: 200px;
+    }
+
+    .popm-content {
+        flex: 1;
+        min-height: 300px;
+    }
+
+    .popm-iframe {
+        min-height: 300px;
+    }
+
+    .popm-close {
+        top: 5px;
+        right: 5px;
+    }
+}
