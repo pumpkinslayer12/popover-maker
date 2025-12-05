@@ -51,6 +51,24 @@ function popm_register_meta_boxes() {
         'normal',
         'high'
     );
+
+    add_meta_box(
+        'popm_dismissal_settings',
+        __('Dismissal Settings', 'popover-maker'),
+        'popm_render_dismissal_settings_meta_box',
+        'popm_popover',
+        'normal',
+        'high'
+    );
+
+    add_meta_box(
+        'popm_analytics',
+        __('Analytics', 'popover-maker'),
+        'popm_render_analytics_meta_box',
+        'popm_popover',
+        'side',
+        'default'
+    );
 }
 
 /**
@@ -241,6 +259,61 @@ function popm_render_layout_meta_box($post) {
 }
 
 /**
+ * Render the Dismissal Settings meta box.
+ *
+ * @param WP_Post $post Current post object.
+ * @return void
+ */
+function popm_render_dismissal_settings_meta_box($post) {
+    // Get current value.
+    $cookie_days = get_post_meta($post->ID, '_popm_cookie_days', true);
+
+    // Set default if empty.
+    if ($cookie_days === '') {
+        $cookie_days = 7;
+    }
+    ?>
+    <table class="form-table">
+        <tr>
+            <th scope="row">
+                <label for="popm_cookie_days"><?php esc_html_e('Remember Dismissal', 'popover-maker'); ?></label>
+            </th>
+            <td>
+                <input type="number" id="popm_cookie_days" name="popm_cookie_days" value="<?php echo esc_attr($cookie_days); ?>" min="0" max="365" step="1" class="small-text">
+                <?php esc_html_e('days', 'popover-maker'); ?>
+                <p class="description"><?php esc_html_e('Days to remember dismissal. Set to 0 to always show popover.', 'popover-maker'); ?></p>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+
+/**
+ * Render the Analytics meta box.
+ *
+ * @param WP_Post $post Current post object.
+ * @return void
+ */
+function popm_render_analytics_meta_box($post) {
+    // Get current values.
+    $views      = get_post_meta($post->ID, '_popm_views', true);
+    $dismissals = get_post_meta($post->ID, '_popm_dismissals', true);
+
+    // Set defaults if empty.
+    $views      = $views !== '' ? intval($views) : 0;
+    $dismissals = $dismissals !== '' ? intval($dismissals) : 0;
+
+    // Calculate dismissal rate.
+    $rate = $views > 0 ? round(($dismissals / $views) * 100, 1) : 0;
+    ?>
+    <p><strong><?php esc_html_e('Views:', 'popover-maker'); ?></strong> <?php echo esc_html($views); ?></p>
+    <p><strong><?php esc_html_e('Dismissals:', 'popover-maker'); ?></strong> <?php echo esc_html($dismissals); ?></p>
+    <p><strong><?php esc_html_e('Dismissal Rate:', 'popover-maker'); ?></strong> <?php echo esc_html($rate); ?>%</p>
+    <p class="description"><?php esc_html_e('Analytics are tracked automatically when the popover is displayed.', 'popover-maker'); ?></p>
+    <?php
+}
+
+/**
  * Save meta box data.
  *
  * @param int $post_id Post ID.
@@ -325,6 +398,13 @@ function popm_save_meta($post_id) {
     if (isset($_POST['popm_max_height'])) {
         $max_height = sanitize_text_field($_POST['popm_max_height']);
         update_post_meta($post_id, '_popm_max_height', $max_height);
+    }
+
+    // Save Cookie Days.
+    if (isset($_POST['popm_cookie_days'])) {
+        $cookie_days = intval($_POST['popm_cookie_days']);
+        $cookie_days = max(0, min(365, $cookie_days)); // Clamp to 0-365.
+        update_post_meta($post_id, '_popm_cookie_days', $cookie_days);
     }
 }
 
