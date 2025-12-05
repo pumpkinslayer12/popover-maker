@@ -39,6 +39,7 @@ define('POPM_PLUGIN_URL', plugin_dir_url(__FILE__));
 require_once POPM_PLUGIN_PATH . 'includes/popm-functions.php';
 require_once POPM_PLUGIN_PATH . 'includes/post-type.php';
 require_once POPM_PLUGIN_PATH . 'includes/meta-boxes.php';
+require_once POPM_PLUGIN_PATH . 'includes/display.php';
 
 /**
  * Register hooks.
@@ -50,3 +51,13 @@ add_action('add_meta_boxes', 'popm_register_meta_boxes');
 add_action('save_post_popm_popover', 'popm_save_meta');
 add_filter('redirect_post_location', 'popm_redirect_post_location', 10, 2);
 add_action('admin_notices', 'popm_admin_notices');
+
+/**
+ * Diagnostic functions
+ */
+add_action('wp_footer', function () {
+    $popover = popm_get_active_popover();
+    echo '<pre style="background:#fff;padding:10px;position:fixed;bottom:0;left:0;z-index:9999;">';
+    var_dump($popover ? $popover->post_title : 'No popover');
+    echo '</pre>';
+});
