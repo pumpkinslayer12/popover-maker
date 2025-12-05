@@ -57,7 +57,11 @@ add_action('admin_notices', 'popm_admin_notices');
  */
 add_action('wp_footer', function () {
     $popover = popm_get_active_popover();
-    echo '<pre style="background:#fff;padding:10px;position:fixed;bottom:0;left:0;z-index:9999;">';
-    var_dump($popover ? $popover->post_title : 'No popover');
-    echo '</pre>';
+    if ($popover) {
+        include POPM_PLUGIN_PATH . 'templates/popover-template.php';
+    } else {
+        echo '<pre style="background:#fff;padding:10px;position:fixed;bottom:0;left:0;z-index:9999;">';
+        var_dump('No popover');
+        echo '</pre>';
+    }
 });
