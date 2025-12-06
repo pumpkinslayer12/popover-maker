@@ -43,7 +43,8 @@ register_post_type('popm_popover', [
 | `_popm_max_height`       | string | `'600px'`        | CSS value (px, %, vh)                             |
 | `_popm_cookie_days`      | int    | `7`              | Days to remember dismissal (0 = always show)      |
 | `_popm_views`            | int    | `0`              | Read-only. View count                             |
-| `_popm_dismissals`       | int    | `0`              | Read-only. Dismissal count                        |
+| `_popm_engaged`          | int    | `0`              | Read-only. Engaged count (closed after 5+ sec)    |
+| `_popm_bounced`          | int    | `0`              | Read-only. Bounced count (closed within 5 sec)    |
 
 
 ## 3. File Structure
@@ -56,7 +57,7 @@ popover-maker/
 │   ├── post-type.php          # CPT registration, admin columns
 │   ├── meta-boxes.php         # Meta box render + save functions
 │   ├── display.php            # Frontend query, render, asset enqueue
-│   ├── analytics.php          # Increment view/dismissal counts
+│   ├── analytics.php          # Increment view/engagement counts
 │   └── ajax.php               # AJAX handlers for tracking
 ├── assets/
 │   ├── css/
@@ -117,21 +118,20 @@ Frontend display logic (hooked to `wp_footer`, priority 999):
 <td><code>{ success: true }</code></td>
 </tr>
 <tr>
-<td><code>popm_track_dismissal</code></td>
+<td><code>popm_track_close</code></td>
 <td>Popover closed by user</td>
-<td><code>{ action, nonce, popover_id }</code></td>
-<td><code>{ success: true, cookie_set: bool }</code></td>
+<td><code>{ action, nonce, popover_id, duration }</code></td>
+<td><code>{ success: true }</code></td>
 </tr>
 </tbody>
 </table>
-Nonce action string: popm_tracking_{popover_id}
+Nonce action string: popm_tracking
 Localized JS object (via wp_localize_script):
 
 popmData = {
     ajaxUrl: admin_url('admin-ajax.php'),
-    nonce: wp_create_nonce('popm_tracking_{id}'),
-    popoverId: {id},
-    cookieDays: {days}
+    nonce: wp_create_nonce('popm_tracking'),
+    popoverId: {id}
 }
 ```
 
@@ -199,12 +199,13 @@ Below 768px:
 ### Phase 4: Analytics
 - Create `analytics.php`:
   - `popm_increment_views($post_id)`
-  - `popm_increment_dismissals($post_id)`
+  - `popm_increment_engaged($post_id)` — user closed after 5+ seconds
+  - `popm_increment_bounced($post_id)` — user closed within 5 seconds
 - Create `ajax.php`:
   - `popm_ajax_track_view` — verify nonce, increment, return success
-  - `popm_ajax_track_dismissal` — verify nonce, increment, set cookie if cookie_days > 0
-- Update `popover.js` to send AJAX on open/close
-- **Verify:** View/dismissal counts increment, display in admin
+  - `popm_ajax_track_close` — verify nonce, check duration, increment engaged/bounced
+- Update `popover.js` to track open timestamp, send duration with close AJAX
+- **Verify:** View/engagement counts increment, engagement rate displays in admin
 
 ### Phase 5: Polish
 - Accessibility: focus trap, ARIA attributes, ESC key handling

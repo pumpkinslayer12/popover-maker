@@ -11,6 +11,25 @@ if (!defined('WPINC')) {
 }
 
 /**
+ * Sanitize a CSS dimension value.
+ *
+ * Validates that the value is a safe CSS dimension (e.g., 900px, 80%, 50vw).
+ * Returns the default value if validation fails.
+ *
+ * @param string $value   The CSS value to sanitize.
+ * @param string $default The default value if validation fails.
+ * @return string Sanitized CSS value or default.
+ */
+function popm_sanitize_css_dimension($value, $default) {
+    $value = sanitize_text_field($value);
+    // Allow: 900px, 80%, 50vw, 80vh, 10em, 5rem, or calc(100% - 20px)
+    if (preg_match('/^[\d.]+(px|em|rem|vh|vw|%)$|^calc\([^)]+\)$/i', $value)) {
+        return $value;
+    }
+    return $default;
+}
+
+/**
  * Register meta boxes for the popover edit screen.
  *
  * @return void
@@ -347,9 +366,13 @@ function popm_save_meta($post_id) {
         update_post_meta($post_id, '_popm_form_provider', $form_provider);
     }
 
-    // Save Form URL.
+    // Save Form URL (HTTPS required for security).
     if (isset($_POST['popm_form_url'])) {
         $form_url = esc_url_raw($_POST['popm_form_url']);
+        // Require HTTPS protocol for iframe security.
+        if ($form_url && !preg_match('#^https://#i', $form_url)) {
+            $form_url = '';
+        }
         update_post_meta($post_id, '_popm_form_url', $form_url);
     }
 
@@ -392,13 +415,13 @@ function popm_save_meta($post_id) {
 
     // Save Width.
     if (isset($_POST['popm_width'])) {
-        $width = sanitize_text_field($_POST['popm_width']);
+        $width = popm_sanitize_css_dimension($_POST['popm_width'], '900px');
         update_post_meta($post_id, '_popm_width', $width);
     }
 
     // Save Max Height.
     if (isset($_POST['popm_max_height'])) {
-        $max_height = sanitize_text_field($_POST['popm_max_height']);
+        $max_height = popm_sanitize_css_dimension($_POST['popm_max_height'], '600px');
         update_post_meta($post_id, '_popm_max_height', $max_height);
     }
 
@@ -444,7 +467,10 @@ function popm_admin_notices() {
         return;
     }
 
-    if ($_GET['popm_notice'] === 'invalid_dates') {
+    // Sanitize GET parameter before use.
+    $notice = sanitize_key($_GET['popm_notice']);
+
+    if ($notice === 'invalid_dates') {
         ?>
         <div class="notice notice-warning is-dismissible">
             <p><?php esc_html_e('Warning: End date is before start date. This popover will not display until the dates are corrected.', 'popover-maker'); ?></p>

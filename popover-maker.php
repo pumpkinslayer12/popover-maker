@@ -2,14 +2,13 @@
 /**
 * Plugin Name: Popover Maker
 *
-* Plugin URI: https://github.com/pumpkinslayer12/mediatree-organizer/
+* Plugin URI: https://github.com/pumpkinslayer12/popover-maker
 *
-* Description: Popover Maker allows you to use the block editor to add a simple popover to any wordpress page or post,
-leveraging existing blocks.
+* Description: Create modal popovers with embedded Google Forms. Features priority-based display, scheduling, cookie-based dismissal, and engagement analytics.
 *
 * Author: pumpkinslayer12
 *
-* Author URI: https://https://github.com/pumpkinslayer12
+* Author URI: https://github.com/pumpkinslayer12
 *
 * Version: 1.0
 *
@@ -36,7 +35,6 @@ define('POPM_PLUGIN_URL', plugin_dir_url(__FILE__));
 /**
  * Include required files.
  */
-require_once POPM_PLUGIN_PATH . 'includes/popm-functions.php';
 require_once POPM_PLUGIN_PATH . 'includes/post-type.php';
 require_once POPM_PLUGIN_PATH . 'includes/meta-boxes.php';
 require_once POPM_PLUGIN_PATH . 'includes/display.php';

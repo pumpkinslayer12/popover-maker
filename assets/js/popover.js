@@ -85,7 +85,9 @@
         var cookieName = 'popm_dismissed_' + popoverId;
         var expires = new Date();
         expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-        document.cookie = cookieName + '=1; expires=' + expires.toUTCString() + '; path=/; SameSite=Lax';
+        // Add Secure flag for HTTPS environments.
+        var secure = location.protocol === 'https:' ? '; Secure' : '';
+        document.cookie = cookieName + '=1; expires=' + expires.toUTCString() + '; path=/; SameSite=Lax' + secure;
     }
 
     /**
