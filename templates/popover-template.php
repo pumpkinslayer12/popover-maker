@@ -43,7 +43,7 @@ if ($has_image && $form_url) {
 $form_url = apply_filters('popm_popover_content', $form_url, $popover);
 ?>
 <div class="popm-overlay" data-popover-id="<?php echo esc_attr($popover->ID); ?>" data-cookie-days="<?php echo esc_attr($cookie_days); ?>">
-    <div class="popm-popup <?php echo esc_attr($layout_class); ?>" style="width: <?php echo esc_attr($width); ?>; max-height: <?php echo esc_attr($max_height); ?>;" role="dialog" aria-modal="true" aria-labelledby="popm-title-<?php echo esc_attr($popover->ID); ?>">
+    <div class="popm-popup <?php echo esc_attr($layout_class); ?>" style="width: <?php echo esc_attr($width); ?>; height: <?php echo esc_attr($max_height); ?>;" role="dialog" aria-modal="true" aria-labelledby="popm-title-<?php echo esc_attr($popover->ID); ?>">
 
         <button class="popm-close" aria-label="<?php esc_attr_e('Close', 'popover-maker'); ?>">&times;</button>
 

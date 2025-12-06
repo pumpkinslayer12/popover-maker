@@ -247,11 +247,11 @@ function popm_render_layout_meta_box($post) {
         </tr>
         <tr>
             <th scope="row">
-                <label for="popm_max_height"><?php esc_html_e('Max Height', 'popover-maker'); ?></label>
+                <label for="popm_max_height"><?php esc_html_e('Height', 'popover-maker'); ?></label>
             </th>
             <td>
                 <input type="text" id="popm_max_height" name="popm_max_height" value="<?php echo esc_attr($max_height); ?>" class="regular-text">
-                <p class="description"><?php esc_html_e('CSS value (e.g., 600px, 80%, 90vh)', 'popover-maker'); ?></p>
+                <p class="description"><?php esc_html_e('Popover height. CSS value (e.g., 600px, 80vh)', 'popover-maker'); ?></p>
             </td>
         </tr>
     </table>
