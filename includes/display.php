@@ -194,4 +194,11 @@ function popm_enqueue_frontend_assets() {
         '1.0',
         true
     );
+
+    // Pass data to JS.
+    wp_localize_script('popm-popover', 'popmData', array(
+        'ajaxUrl'   => admin_url('admin-ajax.php'),
+        'nonce'     => wp_create_nonce('popm_tracking'),
+        'popoverId' => $popover->ID,
+    ));
 }

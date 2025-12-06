@@ -40,6 +40,8 @@ require_once POPM_PLUGIN_PATH . 'includes/popm-functions.php';
 require_once POPM_PLUGIN_PATH . 'includes/post-type.php';
 require_once POPM_PLUGIN_PATH . 'includes/meta-boxes.php';
 require_once POPM_PLUGIN_PATH . 'includes/display.php';
+require_once POPM_PLUGIN_PATH . 'includes/analytics.php';
+require_once POPM_PLUGIN_PATH . 'includes/ajax.php';
 
 /**
  * Register hooks.
@@ -53,3 +55,7 @@ add_filter('redirect_post_location', 'popm_redirect_post_location', 10, 2);
 add_action('admin_notices', 'popm_admin_notices');
 add_action('wp_footer', 'popm_inject_popover', 999);
 add_action('wp_enqueue_scripts', 'popm_enqueue_frontend_assets');
+add_action('wp_ajax_popm_track_view', 'popm_ajax_track_view');
+add_action('wp_ajax_nopriv_popm_track_view', 'popm_ajax_track_view');
+add_action('wp_ajax_popm_track_dismissal', 'popm_ajax_track_dismissal');
+add_action('wp_ajax_nopriv_popm_track_dismissal', 'popm_ajax_track_dismissal');

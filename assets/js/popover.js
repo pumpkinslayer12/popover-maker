@@ -19,6 +19,9 @@
         // Auto-open: add body class immediately
         popmOpen();
 
+        // Track view
+        popmTrackView();
+
         // Bind event listeners
         bindCloseButton();
         bindOverlayClick();
@@ -47,6 +50,9 @@
             return;
         }
 
+        // Track dismissal before removing
+        popmTrackDismissal();
+
         // Get data before removing from DOM
         var popoverId = overlay.getAttribute('data-popover-id');
         var cookieDays = parseInt(overlay.getAttribute('data-cookie-days'), 10);
@@ -74,6 +80,34 @@
         var expires = new Date();
         expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
         document.cookie = cookieName + '=1; expires=' + expires.toUTCString() + '; path=/; SameSite=Lax';
+    }
+
+    /**
+     * Track view via AJAX.
+     */
+    function popmTrackView() {
+        if (typeof popmData === 'undefined') {
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', popmData.ajaxUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send('action=popm_track_view&nonce=' + popmData.nonce + '&popover_id=' + popmData.popoverId);
+    }
+
+    /**
+     * Track dismissal via AJAX.
+     */
+    function popmTrackDismissal() {
+        if (typeof popmData === 'undefined') {
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', popmData.ajaxUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send('action=popm_track_dismissal&nonce=' + popmData.nonce + '&popover_id=' + popmData.popoverId);
     }
 
     /**
