@@ -51,22 +51,5 @@ add_action('add_meta_boxes', 'popm_register_meta_boxes');
 add_action('save_post_popm_popover', 'popm_save_meta');
 add_filter('redirect_post_location', 'popm_redirect_post_location', 10, 2);
 add_action('admin_notices', 'popm_admin_notices');
-
-/**
- * Diagnostic functions
- */
-add_action('wp_footer', function () {
-    $popover = popm_get_active_popover();
-    if ($popover) {
-        // Load CSS.
-        echo '<link rel="stylesheet" href="' . esc_url(POPM_PLUGIN_URL . 'assets/css/popover.css') . '">';
-        // Load template.
-        include POPM_PLUGIN_PATH . 'templates/popover-template.php';
-        // Load JS.
-        echo '<script src="' . esc_url(POPM_PLUGIN_URL . 'assets/js/popover.js') . '"></script>';
-    } else {
-        echo '<pre style="background:#fff;padding:10px;position:fixed;bottom:0;left:0;z-index:9999;">';
-        var_dump('No popover');
-        echo '</pre>';
-    }
-});
+add_action('wp_footer', 'popm_inject_popover', 999);
+add_action('wp_enqueue_scripts', 'popm_enqueue_frontend_assets');

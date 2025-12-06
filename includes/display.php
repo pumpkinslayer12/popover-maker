@@ -149,3 +149,49 @@ function popm_is_dismissed($post_id) {
     $cookie_name = 'popm_dismissed_' . $post_id;
     return isset($_COOKIE[$cookie_name]);
 }
+
+/**
+ * Inject popover HTML into footer if one should display.
+ *
+ * Hooked to wp_footer at priority 999.
+ *
+ * @return void
+ */
+function popm_inject_popover() {
+    $popover = popm_get_active_popover();
+    if (!$popover) {
+        return;
+    }
+
+    // Load template.
+    include POPM_PLUGIN_PATH . 'templates/popover-template.php';
+}
+
+/**
+ * Enqueue frontend CSS and JS if a popover will display.
+ *
+ * Hooked to wp_enqueue_scripts.
+ *
+ * @return void
+ */
+function popm_enqueue_frontend_assets() {
+    $popover = popm_get_active_popover();
+    if (!$popover) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'popm-popover',
+        POPM_PLUGIN_URL . 'assets/css/popover.css',
+        array(),
+        '1.0'
+    );
+
+    wp_enqueue_script(
+        'popm-popover',
+        POPM_PLUGIN_URL . 'assets/js/popover.js',
+        array(),
+        '1.0',
+        true
+    );
+}
