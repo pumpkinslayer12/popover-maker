@@ -23,13 +23,29 @@ function popm_increment_views($post_id) {
 }
 
 /**
- * Increment dismissal count for a popover.
+ * Increment engaged count for a popover.
+ *
+ * Engaged = user closed the popover after 5+ seconds (interacted with content).
  *
  * @param int $post_id Popover post ID.
  * @return void
  */
-function popm_increment_dismissals($post_id) {
-    $dismissals = get_post_meta($post_id, '_popm_dismissals', true);
-    $dismissals = $dismissals !== '' ? intval($dismissals) : 0;
-    update_post_meta($post_id, '_popm_dismissals', $dismissals + 1);
+function popm_increment_engaged($post_id) {
+    $engaged = get_post_meta($post_id, '_popm_engaged', true);
+    $engaged = $engaged !== '' ? intval($engaged) : 0;
+    update_post_meta($post_id, '_popm_engaged', $engaged + 1);
+}
+
+/**
+ * Increment bounced count for a popover.
+ *
+ * Bounced = user closed the popover within 5 seconds (dismissed immediately).
+ *
+ * @param int $post_id Popover post ID.
+ * @return void
+ */
+function popm_increment_bounced($post_id) {
+    $bounced = get_post_meta($post_id, '_popm_bounced', true);
+    $bounced = $bounced !== '' ? intval($bounced) : 0;
+    update_post_meta($post_id, '_popm_bounced', $bounced + 1);
 }

@@ -57,5 +57,5 @@ add_action('wp_footer', 'popm_inject_popover', 999);
 add_action('wp_enqueue_scripts', 'popm_enqueue_frontend_assets');
 add_action('wp_ajax_popm_track_view', 'popm_ajax_track_view');
 add_action('wp_ajax_nopriv_popm_track_view', 'popm_ajax_track_view');
-add_action('wp_ajax_popm_track_dismissal', 'popm_ajax_track_dismissal');
-add_action('wp_ajax_nopriv_popm_track_dismissal', 'popm_ajax_track_dismissal');
+add_action('wp_ajax_popm_track_close', 'popm_ajax_track_close');
+add_action('wp_ajax_nopriv_popm_track_close', 'popm_ajax_track_close');

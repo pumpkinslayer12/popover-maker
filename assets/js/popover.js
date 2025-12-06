@@ -7,6 +7,9 @@
 (function() {
     'use strict';
 
+    // Timestamp when popover was opened (for engagement tracking)
+    var popmOpenTime = null;
+
     /**
      * Initialize the popover functionality.
      */
@@ -15,6 +18,9 @@
         if (!overlay) {
             return;
         }
+
+        // Store open timestamp for engagement tracking
+        popmOpenTime = Date.now();
 
         // Auto-open: add body class immediately
         popmOpen();
@@ -50,8 +56,8 @@
             return;
         }
 
-        // Track dismissal before removing
-        popmTrackDismissal();
+        // Track close with duration before removing
+        popmTrackClose();
 
         // Get data before removing from DOM
         var popoverId = overlay.getAttribute('data-popover-id');
@@ -97,17 +103,27 @@
     }
 
     /**
-     * Track dismissal via AJAX.
+     * Track close with duration via AJAX.
+     *
+     * Duration determines engagement: >=5 seconds = engaged, <5 seconds = bounced.
      */
-    function popmTrackDismissal() {
+    function popmTrackClose() {
         if (typeof popmData === 'undefined') {
             return;
         }
 
+        // Calculate duration in seconds
+        var duration = popmOpenTime ? (Date.now() - popmOpenTime) / 1000 : 0;
+
         var xhr = new XMLHttpRequest();
         xhr.open('POST', popmData.ajaxUrl, true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send('action=popm_track_dismissal&nonce=' + popmData.nonce + '&popover_id=' + popmData.popoverId);
+        xhr.send(
+            'action=popm_track_close' +
+            '&nonce=' + popmData.nonce +
+            '&popover_id=' + popmData.popoverId +
+            '&duration=' + duration
+        );
     }
 
     /**

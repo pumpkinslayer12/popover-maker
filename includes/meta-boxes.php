@@ -296,20 +296,22 @@ function popm_render_dismissal_settings_meta_box($post) {
  */
 function popm_render_analytics_meta_box($post) {
     // Get current values.
-    $views      = get_post_meta($post->ID, '_popm_views', true);
-    $dismissals = get_post_meta($post->ID, '_popm_dismissals', true);
+    $views   = get_post_meta($post->ID, '_popm_views', true);
+    $engaged = get_post_meta($post->ID, '_popm_engaged', true);
+    $bounced = get_post_meta($post->ID, '_popm_bounced', true);
 
     // Set defaults if empty.
-    $views      = $views !== '' ? intval($views) : 0;
-    $dismissals = $dismissals !== '' ? intval($dismissals) : 0;
+    $views   = $views !== '' ? intval($views) : 0;
+    $engaged = $engaged !== '' ? intval($engaged) : 0;
+    $bounced = $bounced !== '' ? intval($bounced) : 0;
 
-    // Calculate dismissal rate.
-    $rate = $views > 0 ? round(($dismissals / $views) * 100, 1) : 0;
+    // Calculate engagement rate (engaged / views).
+    $rate = $views > 0 ? round(($engaged / $views) * 100, 1) : 0;
     ?>
     <p><strong><?php esc_html_e('Views:', 'popover-maker'); ?></strong> <?php echo esc_html($views); ?></p>
-    <p><strong><?php esc_html_e('Dismissals:', 'popover-maker'); ?></strong> <?php echo esc_html($dismissals); ?></p>
-    <p><strong><?php esc_html_e('Dismissal Rate:', 'popover-maker'); ?></strong> <?php echo esc_html($rate); ?>%</p>
-    <p class="description"><?php esc_html_e('Analytics are tracked automatically when the popover is displayed.', 'popover-maker'); ?></p>
+    <p><strong><?php esc_html_e('Engaged:', 'popover-maker'); ?></strong> <?php echo esc_html($engaged); ?> <span class="description">(<?php esc_html_e('closed after 5+ seconds', 'popover-maker'); ?>)</span></p>
+    <p><strong><?php esc_html_e('Bounced:', 'popover-maker'); ?></strong> <?php echo esc_html($bounced); ?> <span class="description">(<?php esc_html_e('closed within 5 seconds', 'popover-maker'); ?>)</span></p>
+    <p><strong><?php esc_html_e('Engagement Rate:', 'popover-maker'); ?></strong> <?php echo esc_html($rate); ?>%</p>
     <?php
 }
 
